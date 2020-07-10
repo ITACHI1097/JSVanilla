@@ -45,3 +45,31 @@ Promise.race([
 })
 
 // error en todas las promesas
+
+
+
+//XMLHTTPRequest 
+// $.ajax('https://randomuser.me/api/dsad',{
+//   method: 'GET',
+//   success: function(data){
+//     console.log(data)
+//   },
+//   error: function(error){
+//     console.log(error)
+//   }
+// })
+
+
+// podemos obtener json ->response.json()
+fetch('https://randomuser.me/api/sdfsd')
+.then(function (response) {
+  console.log(response)
+  return response.json()
+})
+.then(function (user) {
+  console.log(user);
+  console.log('user: ', user.results[0].name.first);
+})
+.catch(function (error) {
+  console.log('algo fallo')
+})
