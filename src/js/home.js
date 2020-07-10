@@ -72,4 +72,41 @@ fetch('https://randomuser.me/api/sdfsd')
 })
 .catch(function (error) {
   console.log('algo fallo')
-})
+});
+
+
+
+/// ASYNC Function
+
+
+(async function load() {
+  //espera las peticiones de la API
+  //await
+  // 'https://yts.mx/api/v2/list_movies.json?genre=action'
+  async function getData(url){
+    const response = await fetch(url)
+    const data = await response.json()
+    // Esperamos a que termine esas operaciones para continuar
+    //Ejecutamos codigo async que se lee secuencialmente
+    return data
+  }
+
+  //Async Await
+  const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action')
+  const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation')
+  const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama')
+
+  ///Promesas
+  /* let dramaList
+  await getData('https://yts.mx/api/v2/list_movies.json?genre=drama')
+  .then(function (data){
+    console.log('dramaList', data);
+    dramaList = data;
+  }); */
+
+  console.log(actionList, dramaList, animationList);
+})()
+
+//llamarla
+//load()
+
