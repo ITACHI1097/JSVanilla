@@ -93,8 +93,9 @@ fetch('https://randomuser.me/api/sdfsd')
 
   //Async Await
   const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action')
-  const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation')
   const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama')
+  //debugger
+  const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation')
 
   ///Promesas
   /* let dramaList
@@ -123,36 +124,46 @@ fetch('https://randomuser.me/api/sdfsd')
     `
     )
   }
-  
-  // console.log(videoItemTemplate('src/images/covers/bitcoin.jpg', 'bitcoin'));
-
-
-
-  const $actionContainer = document.querySelector('#action')
-
-
-  debugger
-  actionList.data.movies.forEach((movie) => {
-    const HTMLstring = videoItemTemplate(movie)
-
+  function createTemplate(HTMLstring){
     const html = document.implementation.createHTMLDocument()
-    
+    //debbuger
     html.body.innerHTML = HTMLstring;
-    //$actionContainer.innerHTML += HTMLstring;
-    $actionContainer.append(html.body.children[0])
-    console.log(HTMLstring);
-  });
+    return html.body.children[0]
+  }
+  // console.log(videoItemTemplate('src/images/covers/bitcoin.jpg', 'bitcoin'));
+  //debugger
+  function renderMovieList(list, $container) {
+    //actionList.data.movies
+    $container.children[0].remove();
+    list.forEach((movie) => {
+      const HTMLstring = videoItemTemplate(movie)
+      const movieElment = createTemplate(HTMLstring)
+      
+      $container.append(movieElment)
 
-
+      //$actionContainer.innerHTML += HTMLstring;
+      //$actionContainer.append(movieElment)
+      //console.log(HTMLstring);
+    });    
+  }
+  
 
   ///SELECTORES HTML
+
+  const $actionContainer = document.querySelector('#action')
+  renderMovieList(actionList.data.movies, $actionContainer) 
+  
+  const $dramaContainer = document.getElementById('drama')
+  renderMovieList(dramaList.data.movies, $dramaContainer) 
+
+  const $animationContainer = document.getElementById('animation')
+  renderMovieList(animationList.data.movies, $animationContainer) 
+
 
   /* const $home = $('.home .list #item');
   const $home = document.getElementById('modal');
    */
-  const $dramaContainer = document.getElementById('#drama')
-  const $animationContainer = document.getElementById('#animation')
-
+  
   const $home = document.getElementById('home')
   const $featuringContainer = document.getElementById('featuring')
   const $form = document.getElementById('form')
