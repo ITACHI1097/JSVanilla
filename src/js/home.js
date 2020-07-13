@@ -83,6 +83,8 @@ fetch('https://randomuser.me/api/sdfsd')
   //espera las peticiones de la API
   //await
   // 'https://yts.mx/api/v2/list_movies.json?genre=action'
+  const BASE_API = 'https://yts.mx/api/v2/'
+  
   async function getData(url) {
     const response = await fetch(url)
     const data = await response.json()
@@ -93,16 +95,62 @@ fetch('https://randomuser.me/api/sdfsd')
 
   const $form = document.getElementById('form')
   const $home = document.getElementById('home')
+  const $featuringContainer = document.getElementById('featuring')
+
   
-  $form.addEventListener('submit', (event) => {
+
+  function setAttributes($element, attributes) {
+    for (const key in attributes) {
+      $element.setAttribute(key, attributes[key])
+      //$element.getAttributes(key, attributes[key])
+    }
+  }
+
+  function featuringTemplate(movie) {
+    return(
+      `
+      <div class="featuring">
+        <div class="featuring-image">
+          <img src="${movie.medium_cover_image}" width="70" height="100" alt="">
+        </div>
+        <div class="featuring-content">
+          <p class="featuring-title">Pelicula encontrada</p>
+          <p class="featuring-album">${movie.title}</p>
+        </div>
+      </div>
+      `
+    )
+  }
+
+  $form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
     $home.classList.add('search-active')
+
+    const $loader = document.createElement('img')
+    setAttributes($loader, {
+      src: 'src/images/loader.gif',
+      height: 50,
+      width: 50
+    })
+    $featuringContainer.append($loader)
+
+    const data = new FormData($form)
+    //const movie = await getData(`${BASE_API}list_movies.json?limit=1&query_term=${data.get('name')}`)
+    const {
+      data: {
+        movies: movie
+      }
+    } = await getData(`${BASE_API}list_movies.json?limit=1&query_term=${data.get('name')}`)
+    //debugger
+    const HTMLString = featuringTemplate(movie[0])
+    $featuringContainer.innerHTML = HTMLString
   })
   //Async Await
-  const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action')
-  const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama')
+  const actionList = await getData(`${BASE_API}list_movies.json?genre=action`)
+  const dramaList = await getData(`${BASE_API}list_movies.json?genre=drama`)
   //debugger
-  const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation')
+  const animationList = await getData(`${BASE_API}list_movies.json?genre=animation`)
 
   ///Promesas
   /* let dramaList
@@ -182,7 +230,6 @@ fetch('https://randomuser.me/api/sdfsd')
   const $home = document.getElementById('modal');
    */
   
-  const $featuringContainer = document.getElementById('featuring')
 
   const $modal = document.getElementById('modal');
   const $overlay = document.getElementById('overlay');
