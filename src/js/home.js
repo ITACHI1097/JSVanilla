@@ -147,10 +147,10 @@ fetch('https://randomuser.me/api/sdfsd')
     $featuringContainer.innerHTML = HTMLString
   })
   //Async Await
-  const actionList = await getData(`${BASE_API}list_movies.json?genre=action`)
-  const dramaList = await getData(`${BASE_API}list_movies.json?genre=drama`)
+  const { data: {movies: actionList} } = await getData(`${BASE_API}list_movies.json?genre=action`)
+  const { data: {movies: dramaList}  } = await getData(`${BASE_API}list_movies.json?genre=drama`)
   //debugger
-  const animationList = await getData(`${BASE_API}list_movies.json?genre=animation`)
+  const { data: {movies: animationList} }= await getData(`${BASE_API}list_movies.json?genre=animation`)
 
   ///Promesas
   /* let dramaList
@@ -165,11 +165,12 @@ fetch('https://randomuser.me/api/sdfsd')
 
 
    // Vanilla Template Literals
-   function videoItemTemplate(movie) {
+   function videoItemTemplate(movie, category) {
     return(
         `
-      <div class="primaryPlaylistItem">
+      <div class="primaryPlaylistItem" data-id="${movie.id}" data-category="${category}">
         <div class="primaryPlaylistItem-image">
+            <p>${movie.id}</p>
             <img src="${movie.medium_cover_image}">
         </div>
         <h4 class="primaryPlaylistItem-title">
@@ -192,15 +193,15 @@ fetch('https://randomuser.me/api/sdfsd')
   function addEventClick($element){
     $element.addEventListener('click', () => {
       //alert('click!')
-      showModal()
+      showModal($element)
     })
   }
   
-  function renderMovieList(list, $container) {
+  function renderMovieList(list, $container, category) {
     //actionList.data.movies
     $container.children[0].remove();
     list.forEach((movie) => {
-      const HTMLstring = videoItemTemplate(movie)
+      const HTMLstring = videoItemTemplate(movie, category)
       const movieElment = createTemplate(HTMLstring)
       
       $container.append(movieElment)
@@ -217,13 +218,13 @@ fetch('https://randomuser.me/api/sdfsd')
   ///SELECTORES HTML
 
   const $actionContainer = document.querySelector('#action')
-  renderMovieList(actionList.data.movies, $actionContainer) 
+  renderMovieList(actionList, $actionContainer, 'action') 
   
   const $dramaContainer = document.getElementById('drama')
-  renderMovieList(dramaList.data.movies, $dramaContainer) 
+  renderMovieList(dramaList, $dramaContainer, 'drama') 
 
   const $animationContainer = document.getElementById('animation')
-  renderMovieList(animationList.data.movies, $animationContainer) 
+  renderMovieList(animationList, $animationContainer, 'animation') 
 
 
   /* const $home = $('.home .list #item');
@@ -235,15 +236,43 @@ fetch('https://randomuser.me/api/sdfsd')
   const $overlay = document.getElementById('overlay');
   const $hideModal = document.getElementById('hide-modal')
 
-  const $modalTitle = $modal.querySelector('h1')
-  const $modalImage = $modal.querySelector('img')
-  const $modalDescription = $modal.querySelector('p')
+  const $modalTitle = $modal.querySelector('h1');
+  const $modalImage = $modal.querySelector('img');
+  const $modalDescription = $modal.querySelector('p');
 
+  
+  function findById(list, id) {
+    return list.find((movie) => movie.id === parseInt(id, 10))
+  }
 
-  function showModal() {
+  function findMovie(id, category) {
+    switch (category) {
+      case 'action':{
+        return findById(actionList, id)
+      }
+      case 'drama':{
+        return findById(dramaList, id)
+      }
+      case 'animation':{
+        return findById(animationList, id)
+      }
+      default:
+        break;
+    }
+  }
+
+  function showModal($element) {
     $overlay.classList.add('active');
     $modal.style.animation = 'modalIn .5s forwards'
-    $modal.style.co
+
+    const id = $element.dataset.id
+    const category = $element.dataset.category
+
+    const data = findMovie(id, category)
+
+    $modalTitle.textContent = data.title
+    $modalImage.setAttribute('src', data.medium_cover_image)
+    $modalDescription.textContent = data.description_full
   }
 
   //$showModal.addEventListener('click', showModal)
@@ -266,12 +295,7 @@ fetch('https://randomuser.me/api/sdfsd')
               'Titulo de la peli' +
             '</h4> '+
         '</div>';
-
-
- 
-
   })()
-
 //llamarla
 //load()
 
